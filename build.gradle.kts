@@ -21,6 +21,8 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.mariadb.jdbc:mariadb-java-client")
+	implementation("com.google.code.gson:gson")
+	implementation("com.squareup.okhttp3:okhttp")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
