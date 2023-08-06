@@ -1,5 +1,6 @@
 package io.github.f4s7m3d1c.hospital.threads
 
+import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -8,6 +9,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 
 private object HospitalAPI {
+	const val SUCCESS_OK = "SERVICE SUCCESS"
+	const val SUCCESS_NO_DATA = "SERVICE SUCCESS BUT NO DATA"
+
 	@Value("\${hospital.api.key}")
 	private lateinit var key: String
 
@@ -38,10 +42,31 @@ class HospitalUpdater: Thread() {
 				.build()
 
 			val response: Response = client.newCall(request).execute()
-			if(response.isSuccessful) {
-
-			}else {
+			if(!response.isSuccessful || response.body === null) {
 				logger.warn("Update failed!!!\ncode: ${response.code}\nmessage: ${response.message}")
+				break
+			}
+			try {
+				@Suppress("UNCHECKED_CAST")
+				val body: MutableMap<String, MutableMap<String, MutableMap<String, Any>>> = Gson()
+					.fromJson(response.body!!.string(), MutableMap::class.java)
+						as MutableMap<String, MutableMap<String, MutableMap<String, Any>>>
+				if(body["response"]!!["header"]!!["resultMsg"] == HospitalAPI.SUCCESS_NO_DATA) {
+					logger.info("Update Success!!")
+					break
+				}
+				if(body["response"]!!["header"]!!["resultMsg"] != HospitalAPI.SUCCESS_OK) {
+					logger.warn("Hospital API service is not success")
+					break
+				}
+				@Suppress("UNCHECKED_CAST")
+				val items: MutableList<MutableMap<String, String?>> = body["response"]!!["body"]!!["items"]
+					as MutableList<MutableMap<String, String?>>
+				for (item: MutableMap<String, String?> in items) {
+					//TODO: Hospital DB에 저장
+				}
+			} catch (e: Exception) {
+				logger.warn("Update failed!!!", e)
 				break
 			}
 			page++
