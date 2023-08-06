@@ -1,5 +1,6 @@
 package io.github.f4s7m3d1c.hospital
 
+import io.github.f4s7m3d1c.hospital.database.VersionLogDB
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import org.springframework.beans.factory.annotation.Value
@@ -37,6 +38,7 @@ class HospitalApplication {
 	fun connectionDB() {
 		Class.forName("org.mariadb.jdbc.Driver")
 		dbConn = DriverManager.getConnection("$dbUrl/$dbName", dbUserName, dbPassword)
+		VersionLogDB.init(dbConn)
 	}
 }
 
