@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.mariadb.jdbc:mariadb-java-client")
 	implementation("com.google.code.gson:gson")
 	implementation("com.squareup.okhttp3:okhttp")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
