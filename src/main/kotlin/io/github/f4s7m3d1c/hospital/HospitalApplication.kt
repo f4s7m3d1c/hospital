@@ -6,6 +6,8 @@ import jakarta.annotation.PreDestroy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableScheduling
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -41,6 +43,10 @@ class HospitalApplication {
 		VersionLogDB.init(dbConn)
 	}
 }
+
+@Configuration
+@EnableScheduling
+class SchedulerConfig
 
 fun main(args: Array<String>) {
 	runApplication<HospitalApplication>(*args)

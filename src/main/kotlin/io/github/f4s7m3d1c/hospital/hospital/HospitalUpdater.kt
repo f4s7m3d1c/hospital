@@ -17,6 +17,7 @@ object HospitalUpdater {
 
 	@OptIn(DelicateCoroutinesApi::class)
 	fun update() {
+		logger.info("Hospital data update started.")
 		GlobalScope.launch(Dispatchers.IO) {
 			var page = 1
 			val client = OkHttpClient()
@@ -56,6 +57,8 @@ object HospitalUpdater {
 				}
 				page++
 			}
+
+			logger.info("Hospital data update completed")
 		}
 	}
 }
