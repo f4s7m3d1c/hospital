@@ -2,6 +2,7 @@ package io.github.f4s7m3d1c.hospital.database
 
 import io.github.f4s7m3d1c.hospital.hospital.Hospital
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.Statement
 
 class HospitalDB(conn: Connection) {
@@ -32,15 +33,56 @@ class HospitalDB(conn: Connection) {
 		}
 	}
 
+	private val removeVersionStatement: PreparedStatement
+		= conn.prepareStatement("DELETE FROM `hospital_info_db` WHERE `version` = ?;")
+
 	fun removeVersion(version: UInt) {
-		//TODO
+		removeVersionStatement.setLong(1, version.toLong())
+		removeVersionStatement.executeQuery()
+	}
+
+	private val removeLowerVersionStatement: PreparedStatement
+		= conn.prepareStatement("DELETE FROM `hospital_info_db` WHERE `version`<=?;")
+
+	fun removeLowerVersion(version: UInt) {
+		removeLowerVersionStatement.setLong(1, version.toLong())
+		removeLowerVersionStatement.executeQuery()
 	}
 
 	fun getHospitals(latitude: Double, longitude: Double) {
+		val version: UInt = VersionLogDB.INSTANCE.getLatestStableVersion
 		//TODO
 	}
 
-	fun addHospital(hospital: Hospital) {
-		//TODO
+	private val addHospitalStatement: PreparedStatement
+		= conn.prepareStatement("INSERT INTO `hospital_info_db`(\n" +
+			"    `version`,\n" +
+			"    `name`,\n" +
+			"    `latitude`,\n" +
+			"    `longitude`,\n" +
+			"    `hasER`,\n" +
+			"    `timeMon`,\n" +
+			"    `timeTue`,\n" +
+			"    `timeWen`,\n" +
+			"    `timeThu`,\n" +
+			"    `timeFri`,\n" +
+			"    `timeSat`,\n" +
+			"    `timeSun`\n" +
+			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+
+	fun addHospital(version: UInt, hospital: Hospital) {
+		addHospitalStatement.setLong(1, version.toLong())
+		addHospitalStatement.setString(2, hospital.name)
+		addHospitalStatement.setDouble(3, hospital.latitude)
+		addHospitalStatement.setDouble(4, hospital.longitude)
+		addHospitalStatement.setBoolean(5, hospital.hasER)
+		addHospitalStatement.setString(6, hospital.openTime.mon)
+		addHospitalStatement.setString(7, hospital.openTime.tue)
+		addHospitalStatement.setString(8, hospital.openTime.wen)
+		addHospitalStatement.setString(9, hospital.openTime.thu)
+		addHospitalStatement.setString(10, hospital.openTime.fri)
+		addHospitalStatement.setString(11, hospital.openTime.sat)
+		addHospitalStatement.setString(12, hospital.openTime.sun)
+		addHospitalStatement.executeQuery()
 	}
 }

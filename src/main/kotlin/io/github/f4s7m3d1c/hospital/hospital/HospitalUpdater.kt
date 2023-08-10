@@ -1,10 +1,10 @@
 package io.github.f4s7m3d1c.hospital.hospital
 
 import com.google.gson.Gson
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import io.github.f4s7m3d1c.hospital.database.HospitalDB
+import io.github.f4s7m3d1c.hospital.database.VersionLogDB
+import io.github.f4s7m3d1c.hospital.version.VersionStatus
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -19,8 +19,12 @@ object HospitalUpdater {
 	fun update() {
 		logger.info("Hospital data update started.")
 		GlobalScope.launch(Dispatchers.IO) {
+			val newVersion: UInt = VersionLogDB.INSTANCE.getLatestVersion + 1u
+			VersionLogDB.INSTANCE.createVersion(newVersion)
+
 			var page = 1
 			val client = OkHttpClient()
+			var isStable = true
 
 			while (true) {
 				val request: Request = Request.Builder()
@@ -30,6 +34,7 @@ object HospitalUpdater {
 				val response: Response = client.newCall(request).execute()
 				if(!response.isSuccessful || response.body === null) {
 					logger.warn("Update failed!!!\ncode: ${response.code}\nmessage: ${response.message}")
+					isStable = false
 					break
 				}
 				try {
@@ -43,6 +48,7 @@ object HospitalUpdater {
 					}
 					if(body["response"]!!["header"]!!["resultMsg"] != HospitalAPI.SUCCESS_OK) {
 						logger.warn("Hospital API service is not success")
+						isStable = false
 						break
 					}
 					@Suppress("UNCHECKED_CAST")
@@ -53,12 +59,21 @@ object HospitalUpdater {
 					}
 				} catch (e: Exception) {
 					logger.warn("Update failed!!!", e)
+					isStable = false
 					break
 				}
 				page++
 			}
-
+			if(!isStable) {
+				VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.ERROR)
+				HospitalDB.INSTANCE.removeVersion(newVersion)
+			}
 			logger.info("Hospital data update completed")
+			VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.STABLE)
+			logger.info("Staring to remove old data.")
+			HospitalDB.INSTANCE.removeLowerVersion(newVersion - 2u)
+			VersionLogDB.INSTANCE.updateRemoveVersions(newVersion -2u)
+			logger.info("Completed removing old data")
 		}
 	}
 }

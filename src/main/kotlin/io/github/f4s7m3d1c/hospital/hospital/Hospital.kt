@@ -5,5 +5,5 @@ data class Hospital(
 	val latitude: Double, // 위도
 	val longitude: Double, // 경도
 	val hasER: Boolean, // 응급실 보유 여부
-	val openTime: Map<String, String> // 운영 시간
+	val openTime: OpenTime // 운영 시간
 )

@@ -35,7 +35,7 @@ class VersionLogDB(conn: Connection) {
 	}
 
 	private val latestStableVersionStatement: PreparedStatement
-		= conn.prepareStatement("SELECT COALESCE(MAX(`version`), 0) AS `latest_version` FROM `version_log_db` WHERE status = 200;")
+		= conn.prepareStatement("SELECT COALESCE(MAX(`version`), 0) AS `latest_version` FROM `version_log_db` WHERE `status` = 200;")
 
 	val getLatestStableVersion: UInt get() {
 		val result: ResultSet = latestStableVersionStatement.executeQuery()
@@ -43,7 +43,7 @@ class VersionLogDB(conn: Connection) {
 	}
 
 	private val versionInfoStatement: PreparedStatement
-		= conn.prepareStatement("SELECT * FROM `version_log_db` WHERE version = ?;")
+		= conn.prepareStatement("SELECT * FROM `version_log_db` WHERE `version` = ?;")
 
 	fun getVersionInfo(version: UInt): VersionInfo{
 		versionInfoStatement.setLong(1, version.toLong())
@@ -56,7 +56,7 @@ class VersionLogDB(conn: Connection) {
 	}
 
 	private val createVersionStatement: PreparedStatement
-		= conn.prepareStatement("INSERT INTO `version_log_db`(version, date, status) VALUES (?, NOW(), ?);")
+		= conn.prepareStatement("INSERT INTO `version_log_db`(`version`, `date`, `status`) VALUES (?, NOW(), ?);")
 
 	fun createVersion(version: UInt, status: VersionStatus = VersionStatus.LOADING) {
 		createVersionStatement.setLong(1, version.toLong())
@@ -65,11 +65,19 @@ class VersionLogDB(conn: Connection) {
 	}
 
 	private val setVersionStatusStatement
-		= conn.prepareStatement("UPDATE `version_log_db` SET `status`=? WHERE version=?;")
+		= conn.prepareStatement("UPDATE `version_log_db` SET `status`=? WHERE `version`=?;")
 
 	fun setVersionStatus(version: UInt, status: VersionStatus) {
 		setVersionStatusStatement.setInt(1, version.toInt())
 		setVersionStatusStatement.setInt(2, status.code.toInt())
 		setVersionStatusStatement.executeQuery()
+	}
+
+	private val updateRemoveVersionsStatement
+			= conn.prepareStatement("UPDATE `version_log_db` SET `status`=44 WHERE `version` <= ?;")
+
+	fun updateRemoveVersions(version: UInt) {
+		updateRemoveVersionsStatement.setInt(1, version.toInt())
+		updateRemoveVersionsStatement.executeQuery()
 	}
 }
