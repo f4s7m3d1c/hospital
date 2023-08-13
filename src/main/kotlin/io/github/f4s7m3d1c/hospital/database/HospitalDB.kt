@@ -1,8 +1,11 @@
 package io.github.f4s7m3d1c.hospital.database
 
 import io.github.f4s7m3d1c.hospital.hospital.Hospital
+import io.github.f4s7m3d1c.hospital.hospital.OpenTime
+import io.github.f4s7m3d1c.hospital.math.Vector2
 import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.sql.Statement
 
 class HospitalDB(conn: Connection) {
@@ -49,9 +52,38 @@ class HospitalDB(conn: Connection) {
 		removeLowerVersionStatement.executeQuery()
 	}
 
-	fun getHospitals(latitude: Double, longitude: Double) {
+	private val getHospitalsStatement: PreparedStatement
+		= conn.prepareStatement("SELECT `name`, `latitude`, `longitude`, `hasER`, `timeMon`, `timeTue`, `timeWen`, `timeThu`, `timeFri`, `timeSat`, `timeSun`\n" +
+			"FROM `hospital_info_db`\n" +
+			"WHERE `version`=? AND (`latitude`, `longitude`) BETWEEN (?, ?) AND (?, ?);")
+
+	fun getHospitals(pair: Pair<Vector2, Vector2>): MutableList<Hospital> {
 		val version: UInt = VersionLogDB.INSTANCE.getLatestStableVersion
-		//TODO
+		getHospitalsStatement.setLong(1, version.toLong())
+		getHospitalsStatement.setDouble(2, pair.first.latitude)
+		getHospitalsStatement.setDouble(3, pair.first.longitude)
+		getHospitalsStatement.setDouble(4, pair.second.latitude)
+		getHospitalsStatement.setDouble(5, pair.second.longitude)
+		val rows: ResultSet = getHospitalsStatement.executeQuery()
+		val hospitals: MutableList<Hospital> = mutableListOf()
+		while (rows.next()){
+			hospitals += Hospital(
+				name = rows.getString("name"),
+				latitude = rows.getDouble("latitude"),
+				longitude = rows.getDouble("longitude"),
+				hasER = rows.getBoolean("hasER"),
+				OpenTime(
+					mon = rows.getString("timeMon"),
+					tue = rows.getString("timeTue"),
+					wen = rows.getString("timeWen"),
+					thu =  rows.getString("timeThu"),
+					fri = rows.getString("timeFri"),
+					sat = rows.getString("timeSat"),
+					sun = rows.getString("timeSun")
+				)
+			)
+		}
+		return hospitals
 	}
 
 	private val addHospitalStatement: PreparedStatement

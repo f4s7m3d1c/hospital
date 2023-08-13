@@ -31,6 +31,7 @@ class VersionLogDB(conn: Connection) {
 
 	val getLatestVersion: UInt get() {
 		val result: ResultSet = latestVersionStatement.executeQuery()
+		result.next()
 		return result.getLong("latest_version").toUInt()
 	}
 
@@ -39,6 +40,7 @@ class VersionLogDB(conn: Connection) {
 
 	val getLatestStableVersion: UInt get() {
 		val result: ResultSet = latestStableVersionStatement.executeQuery()
+		result.next()
 		return result.getLong("latest_version").toUInt()
 	}
 
@@ -48,6 +50,7 @@ class VersionLogDB(conn: Connection) {
 	fun getVersionInfo(version: UInt): VersionInfo{
 		versionInfoStatement.setLong(1, version.toLong())
 		val result: ResultSet = versionInfoStatement.executeQuery()
+		result.next()
 		return VersionInfo(
 			result.getLong("version").toUInt(),
 			result.getDate("date"),
