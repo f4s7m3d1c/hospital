@@ -1,8 +1,10 @@
 package io.github.f4s7m3d1c.hospital
 
 import io.github.f4s7m3d1c.hospital.database.VersionLogDB
+import io.github.f4s7m3d1c.hospital.hospital.HospitalUpdater
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -49,5 +51,9 @@ class HospitalApplication {
 class SchedulerConfig
 
 fun main(args: Array<String>) {
+	runBlocking {
+		val job = HospitalUpdater.update()
+		job.join()
+	}
 	runApplication<HospitalApplication>(*args)
 }
