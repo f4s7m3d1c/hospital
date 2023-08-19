@@ -1,6 +1,8 @@
 package io.github.f4s7m3d1c.hospital
 
+import io.github.f4s7m3d1c.hospital.database.HospitalDB
 import io.github.f4s7m3d1c.hospital.database.VersionLogDB
+import io.github.f4s7m3d1c.hospital.hospital.HospitalAPI
 import io.github.f4s7m3d1c.hospital.hospital.HospitalUpdater
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
@@ -29,9 +31,17 @@ class HospitalApplication {
 
 	private lateinit var dbConn: Connection
 
+	@Value("\${hospital.api.key}")
+	private lateinit var key: String
+
 	@PostConstruct
 	fun onEnable() {
 		connectionDB()
+		HospitalAPI.initialKey(key)
+		runBlocking {
+			val job = HospitalUpdater.update()
+			job.join()
+		}
 	}
 
 	@PreDestroy
@@ -43,6 +53,7 @@ class HospitalApplication {
 		Class.forName("org.mariadb.jdbc.Driver")
 		dbConn = DriverManager.getConnection("$dbUrl/$dbName", dbUserName, dbPassword)
 		VersionLogDB.init(dbConn)
+		HospitalDB.init(dbConn)
 	}
 }
 
@@ -51,9 +62,5 @@ class HospitalApplication {
 class SchedulerConfig
 
 fun main(args: Array<String>) {
-	runBlocking {
-		val job = HospitalUpdater.update()
-		job.join()
-	}
 	runApplication<HospitalApplication>(*args)
 }
