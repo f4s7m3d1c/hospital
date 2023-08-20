@@ -6,13 +6,16 @@ import java.lang.Math.toDegrees
 
 private const val EARTH_RADIUS = 6371.0 // 지구 반지름
 
-class Vector2(val latitude: Double, val longitude: Double) {
+class Vector2(val lat: Double, val lon: Double) {
+	override fun toString(): String {
+		return "Vector2($lat, $lon)"
+	}
 
 	fun distance(vector: Vector2): Double {
-		val lat1Rad: Double = toRadians(latitude)
-		val lon1Rad: Double = toRadians(longitude)
-		val lat2Rad: Double = toRadians(vector.latitude)
-		val lon2Rad: Double = toRadians(vector.longitude)
+		val lat1Rad: Double = toRadians(lat)
+		val lon1Rad: Double = toRadians(lon)
+		val lat2Rad: Double = toRadians(vector.lat)
+		val lon2Rad: Double = toRadians(vector.lon)
 
 		val latDiff: Double = (lat2Rad - lat1Rad) / 2
 		val lonDiff: Double = (lon2Rad - lon1Rad) / 2
@@ -25,12 +28,12 @@ class Vector2(val latitude: Double, val longitude: Double) {
 
 	fun calculateBoundingBox(sideLength: Double = 2.0): Pair<Vector2, Vector2> {
 		val latDiff: Double = toDegrees(sideLength / (2 * EARTH_RADIUS))
-		val lonDiff: Double = toDegrees(sideLength / (2 * EARTH_RADIUS * cos(toRadians(latitude))))
+		val lonDiff: Double = toDegrees(sideLength / (2 * EARTH_RADIUS * cos(toRadians(lat))))
 
-		val minLat: Double = latitude - latDiff
-		val maxLat: Double = latitude + latDiff
-		val minLon: Double = longitude - lonDiff
-		val maxLon: Double = longitude + lonDiff
+		val minLat: Double = lat - latDiff
+		val maxLat: Double = lat + latDiff
+		val minLon: Double = lon - lonDiff
+		val maxLon: Double = lon + lonDiff
 
 		return Pair(
 			Vector2(minLat, minLon),
