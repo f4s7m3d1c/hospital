@@ -92,8 +92,8 @@ object HospitalUpdater {
 			logger.info("Hospital data update completed")
 			VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.STABLE)
 			logger.info("Staring to remove old data.")
-			HospitalDB.INSTANCE.removeLowerVersion(newVersion - 2u)
-			VersionLogDB.INSTANCE.updateRemoveVersions(newVersion -2u)
+			HospitalDB.INSTANCE.removeLowerVersion(newVersion - 1u)
+			VersionLogDB.INSTANCE.updateRemoveVersions(newVersion -1u)
 			logger.info("Completed removing old data")
 		}
 	}
