@@ -39,8 +39,10 @@ class HospitalApplication {
 		connectionDB()
 		HospitalAPI.initialKey(key)
 		runBlocking {
-			val job = HospitalUpdater.update()
-			job.join()
+			if(VersionLogDB.INSTANCE.getLatestVersion == 0u) {
+				val job = HospitalUpdater.update()
+				job.join()
+			}
 		}
 	}
 
