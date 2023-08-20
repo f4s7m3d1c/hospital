@@ -10,6 +10,7 @@ import okhttp3.Request
 import okhttp3.Response
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.NullPointerException
 
 object HospitalUpdater {
 
@@ -54,10 +55,31 @@ object HospitalUpdater {
 				val items: MutableList<MutableMap<String, String?>> = body["response"]!!["body"]!!["items"]
 						as MutableList<MutableMap<String, String?>>
 				for (item: MutableMap<String, String?> in items) {
-					//TODO: HospitalDB.INSTANCE.addHospital(newVersion, Hospital())
+					try {
+						HospitalDB.INSTANCE.addHospital(
+							newVersion, Hospital(
+								name = item["DUTYNAME"]!!,
+								latitude = item["LAT"]!!.toDouble(),
+								longitude = item["LON"]!!.toDouble(),
+								hasER = item.getOrDefault("DUTYERYN", "2") == "1",
+								openTime = OpenTime.createOpenTimeMap(
+									timeMonS = item["DUTYTIME1S"], timeMonC = item["DUTYTIME1C"],
+									timeTueS = item["DUTYTIME2S"], timeTueC = item["DUTYTIME2C"],
+									timeWenS = item["DUTYTIME3S"], timeWenC = item["DUTYTIME3C"],
+									timeThuS = item["DUTYTIME4S"], timeThuC = item["DUTYTIME4C"],
+									timeFriS = item["DUTYTIME5S"], timeFriC = item["DUTYTIME5C"],
+									timeSatS = item["DUTYTIME6S"], timeSatC = item["DUTYTIME6C"],
+									timeSunS = item["DUTYTIME7S"], timeSunC = item["DUTYTIME7C"]
+								)
+							)
+						)
+					} catch (e: NullPointerException) {
+						logger.warn("Fail!! $page:${item["DUTYNAME"]}'s latitude or longitude value is null")
+					}
 				}
 			} catch (e: Exception) {
 				logger.warn("Update failed!!!", e)
+				logger.warn("error page is $page")
 				isStable = false
 				break
 			}
@@ -66,12 +88,13 @@ object HospitalUpdater {
 		if(!isStable) {
 			VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.ERROR)
 			HospitalDB.INSTANCE.removeVersion(newVersion)
+		}else {
+			logger.info("Hospital data update completed")
+			VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.STABLE)
+			logger.info("Staring to remove old data.")
+			HospitalDB.INSTANCE.removeLowerVersion(newVersion - 2u)
+			VersionLogDB.INSTANCE.updateRemoveVersions(newVersion -2u)
+			logger.info("Completed removing old data")
 		}
-		logger.info("Hospital data update completed")
-		VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.STABLE)
-		logger.info("Staring to remove old data.")
-		HospitalDB.INSTANCE.removeLowerVersion(newVersion - 2u)
-		VersionLogDB.INSTANCE.updateRemoveVersions(newVersion -2u)
-		logger.info("Completed removing old data")
 	}
 }
