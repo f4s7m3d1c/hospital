@@ -71,8 +71,8 @@ class VersionLogDB(conn: Connection) {
 		= conn.prepareStatement("UPDATE `version_log_db` SET `status`=? WHERE `version`=?;")
 
 	fun setVersionStatus(version: UInt, status: VersionStatus) {
-		setVersionStatusStatement.setInt(1, version.toInt())
-		setVersionStatusStatement.setInt(2, status.code.toInt())
+		setVersionStatusStatement.setInt(1, status.code.toInt())
+		setVersionStatusStatement.setInt(2, version.toInt())
 		setVersionStatusStatement.executeQuery()
 	}
 

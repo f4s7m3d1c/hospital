@@ -55,16 +55,16 @@ class HospitalDB(conn: Connection) {
 	private val getHospitalsStatement: PreparedStatement
 		= conn.prepareStatement("SELECT `name`, `latitude`, `longitude`, `hasER`, `timeMon`, `timeTue`, `timeWen`, `timeThu`, `timeFri`, `timeSat`, `timeSun`\n" +
 			"FROM `hospital_info_db`\n" +
-			"WHERE `version` = 2 AND\n" +
-			"    (`latitude` BETWEEN 37.55158388110538 AND 37.581486118894624) AND\n" +
-			"    (`longitude` BETWEEN 126.96897598394082 AND 126.98696241605919);")
+			"WHERE `version` = ? AND\n" +
+			"    (`latitude` BETWEEN ? AND ?) AND\n" +
+			"    (`longitude` BETWEEN ? AND ?);")
 
 	fun getHospitals(pair: Pair<Vector2, Vector2>): MutableList<Hospital> {
 		val version: UInt = VersionLogDB.INSTANCE.getLatestStableVersion
 		getHospitalsStatement.setLong(1, version.toLong())
 		getHospitalsStatement.setDouble(2, pair.first.lat)
-		getHospitalsStatement.setDouble(4, pair.second.lat)
-		getHospitalsStatement.setDouble(3, pair.first.lon)
+		getHospitalsStatement.setDouble(3, pair.second.lat)
+		getHospitalsStatement.setDouble(4, pair.first.lon)
 		getHospitalsStatement.setDouble(5, pair.second.lon)
 		val rows: ResultSet = getHospitalsStatement.executeQuery()
 		val hospitals: MutableList<Hospital> = mutableListOf()
