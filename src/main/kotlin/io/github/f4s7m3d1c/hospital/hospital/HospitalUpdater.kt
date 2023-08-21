@@ -83,6 +83,7 @@ object HospitalUpdater {
 				isStable = false
 				break
 			}
+			logger.info("$page page is completed")
 			page++
 		}
 		if(!isStable) {
