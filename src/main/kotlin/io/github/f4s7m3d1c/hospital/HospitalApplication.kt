@@ -6,7 +6,6 @@ import io.github.f4s7m3d1c.hospital.hospital.HospitalAPI
 import io.github.f4s7m3d1c.hospital.hospital.HospitalUpdater
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
-import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -35,11 +34,8 @@ class HospitalApplication {
 	fun onEnable() {
 		connectionDB()
 		HospitalAPI.initialKey(key)
-		runBlocking {
-			if(VersionLogDB.INSTANCE.getLatestVersion == 0u) {
-				val job = HospitalUpdater.update()
-				job.join()
-			}
+		if(VersionLogDB.INSTANCE.getLatestStableVersion == 0u) {
+			HospitalUpdater.update()
 		}
 	}
 
