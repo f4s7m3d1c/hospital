@@ -20,9 +20,6 @@ class HospitalApplication {
 	@Value("\${spring.datasource.url}")
 	private lateinit var dbUrl: String
 
-	@Value("\${spring.datasource.name}")
-	private lateinit var dbName: String
-
 	@Value("\${spring.datasource.username}")
 	private lateinit var dbUserName: String
 
@@ -53,7 +50,7 @@ class HospitalApplication {
 
 	fun connectionDB() {
 		Class.forName("org.mariadb.jdbc.Driver")
-		dbConn = DriverManager.getConnection("$dbUrl/$dbName", dbUserName, dbPassword)
+		dbConn = DriverManager.getConnection(dbUrl, dbUserName, dbPassword)
 		VersionLogDB.init(dbConn)
 		HospitalDB.init(dbConn)
 	}
