@@ -1,5 +1,6 @@
 package io.github.f4s7m3d1c.hospital.hospital
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.f4s7m3d1c.hospital.math.Vector2
 
 data class Hospital(
@@ -9,5 +10,6 @@ data class Hospital(
 	val hasER: Boolean, // 응급실 보유 여부
 	val openTime: OpenTime // 운영 시간
 ) {
+	@get:JsonIgnore
 	val position: Vector2 get() = Vector2(latitude, longitude)
 }
