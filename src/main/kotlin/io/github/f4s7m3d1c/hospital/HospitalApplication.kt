@@ -4,18 +4,18 @@ import io.github.f4s7m3d1c.hospital.database.HospitalDB
 import io.github.f4s7m3d1c.hospital.database.VersionLogDB
 import io.github.f4s7m3d1c.hospital.hospital.HospitalAPI
 import io.github.f4s7m3d1c.hospital.hospital.HospitalUpdater
+import io.github.f4s7m3d1c.hospital.scheduler.HospitalSchedule
 import jakarta.annotation.PostConstruct
 import jakarta.annotation.PreDestroy
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Configuration
-import org.springframework.scheduling.annotation.EnableScheduling
 import java.sql.Connection
 import java.sql.DriverManager
 
 @SpringBootApplication
 class HospitalApplication {
+
 	@Value("\${spring.datasource.url}")
 	private lateinit var dbUrl: String
 
@@ -49,12 +49,9 @@ class HospitalApplication {
 		dbConn = DriverManager.getConnection(dbUrl, dbUserName, dbPassword)
 		VersionLogDB.init(dbConn)
 		HospitalDB.init(dbConn)
+		HospitalSchedule.registerConnection(dbConn)
 	}
 }
-
-@Configuration
-@EnableScheduling
-class SchedulerConfig
 
 fun main(args: Array<String>) {
 	runApplication<HospitalApplication>(*args)
