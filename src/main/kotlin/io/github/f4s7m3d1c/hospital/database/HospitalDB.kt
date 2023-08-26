@@ -39,17 +39,17 @@ class HospitalDB(conn: Connection) {
 	private val removeVersionStatement: PreparedStatement
 		= conn.prepareStatement("DELETE FROM `hospital_info_db` WHERE `version` = ?;")
 
-	fun removeVersion(version: UInt) {
+	fun removeVersion(version: UInt) : Boolean {
 		removeVersionStatement.setLong(1, version.toLong())
-		removeVersionStatement.executeQuery()
+		return removeVersionStatement.execute()
 	}
 
 	private val removeLowerVersionStatement: PreparedStatement
 		= conn.prepareStatement("DELETE FROM `hospital_info_db` WHERE `version`<=?;")
 
-	fun removeLowerVersion(version: UInt) {
+	fun removeLowerVersion(version: UInt) : Boolean {
 		removeLowerVersionStatement.setLong(1, version.toLong())
-		removeLowerVersionStatement.executeQuery()
+		return removeLowerVersionStatement.execute()
 	}
 
 	private val getHospitalsStatement: PreparedStatement
@@ -104,7 +104,7 @@ class HospitalDB(conn: Connection) {
 			"    `timeSun`\n" +
 			") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 
-	fun addHospital(version: UInt, hospital: Hospital) {
+	fun addHospital(version: UInt, hospital: Hospital) : Boolean {
 		addHospitalStatement.setLong(1, version.toLong())
 		addHospitalStatement.setString(2, hospital.name)
 		addHospitalStatement.setDouble(3, hospital.latitude)
@@ -117,6 +117,6 @@ class HospitalDB(conn: Connection) {
 		addHospitalStatement.setString(10, hospital.openTime.fri)
 		addHospitalStatement.setString(11, hospital.openTime.sat)
 		addHospitalStatement.setString(12, hospital.openTime.sun)
-		addHospitalStatement.executeQuery()
+		return addHospitalStatement.execute()
 	}
 }

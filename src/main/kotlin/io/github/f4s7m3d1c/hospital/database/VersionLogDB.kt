@@ -61,26 +61,26 @@ class VersionLogDB(conn: Connection) {
 	private val createVersionStatement: PreparedStatement
 		= conn.prepareStatement("INSERT INTO `version_log_db`(`version`, `date`, `status`) VALUES (?, NOW(), ?);")
 
-	fun createVersion(version: UInt, status: VersionStatus = VersionStatus.LOADING) {
+	fun createVersion(version: UInt, status: VersionStatus = VersionStatus.LOADING) : Boolean {
 		createVersionStatement.setLong(1, version.toLong())
 		createVersionStatement.setInt(2, status.code.toInt())
-		createVersionStatement.executeQuery()
+		return createVersionStatement.execute()
 	}
 
 	private val setVersionStatusStatement
 		= conn.prepareStatement("UPDATE `version_log_db` SET `status`=? WHERE `version`=?;")
 
-	fun setVersionStatus(version: UInt, status: VersionStatus) {
+	fun setVersionStatus(version: UInt, status: VersionStatus) : Boolean{
 		setVersionStatusStatement.setInt(1, status.code.toInt())
 		setVersionStatusStatement.setInt(2, version.toInt())
-		setVersionStatusStatement.executeQuery()
+		return setVersionStatusStatement.execute()
 	}
 
 	private val updateRemoveVersionsStatement
 			= conn.prepareStatement("UPDATE `version_log_db` SET `status`=44 WHERE `version` <= ?;")
 
-	fun updateRemoveVersions(version: UInt) {
+	fun updateRemoveVersions(version: UInt) : Boolean{
 		updateRemoveVersionsStatement.setInt(1, version.toInt())
-		updateRemoveVersionsStatement.executeQuery()
+		return updateRemoveVersionsStatement.execute()
 	}
 }
