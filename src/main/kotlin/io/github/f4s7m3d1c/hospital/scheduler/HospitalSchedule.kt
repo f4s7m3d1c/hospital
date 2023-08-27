@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.sql.Connection
+import java.sql.Statement
 
 @Component
 @EnableScheduling
@@ -24,8 +25,8 @@ class HospitalSchedule {
 
 	@Scheduled(fixedRate = 1800000)
 	fun performDatabaseHeartbeat() {
-		conn.createStatement().use {
-			it.execute("SELECT 1")
-		}
+		val statement: Statement = conn.createStatement()
+		statement.execute("SELECT 1")
+		statement.close()
 	}
 }
