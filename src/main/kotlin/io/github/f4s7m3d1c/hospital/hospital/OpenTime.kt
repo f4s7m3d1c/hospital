@@ -30,7 +30,7 @@ data class OpenTime(
 
 		private fun timeFormat(start: String?, close: String?): String {
 			if(start === null || close === null) {
-				return "X"
+				return "휴진"
 			}
 			return "${start.take(2)}:${start.subSequence(2, 4)} ~ ${close.take(2)}:${close.subSequence(2, 4)}"
 		}
