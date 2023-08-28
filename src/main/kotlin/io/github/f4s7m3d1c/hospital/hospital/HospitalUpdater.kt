@@ -43,7 +43,12 @@ object HospitalUpdater {
 					.fromJson(response.body!!.string(), MutableMap::class.java)
 						as MutableMap<String, MutableMap<String, MutableMap<String, Any>>>
 				if(body["response"]!!["header"]!!["resultMsg"] == HospitalAPI.SUCCESS_NO_DATA) {
-					logger.info("Update Success!!")
+					if(page < 20) {
+						isStable = false
+						logger.warn("Insufficient response data in OpenAPI.")
+					}else{
+						logger.info("Update Success!!")
+					}
 					break
 				}
 				if(body["response"]!!["header"]!!["resultMsg"] != HospitalAPI.SUCCESS_OK) {
@@ -78,14 +83,14 @@ object HospitalUpdater {
 					}
 				}
 			} catch (e: Exception) {
-				logger.warn("Update failed!!!", e)
-				logger.warn("error page is $page")
+				logger.warn("error page is $page", e)
 				isStable = false
 				break
 			}
 			page++
 		}
 		if(!isStable) {
+			logger.warn("Update failed!!!")
 			VersionLogDB.INSTANCE.setVersionStatus(newVersion, VersionStatus.ERROR)
 			HospitalDB.INSTANCE.removeVersion(newVersion)
 		}else {
