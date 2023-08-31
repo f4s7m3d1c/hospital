@@ -54,7 +54,7 @@ class VersionLogDB(conn: Connection) {
 		return VersionInfo(
 			result.getLong("version").toUInt(),
 			result.getDate("date"),
-			VersionStatus.forCode(result.getInt("status").toUByte())
+			VersionStatus.forCode(result.getInt("status").toUByte())!!
 		)
 	}
 
