@@ -13,9 +13,10 @@ object HospitalAPI {
 		this.key = key
 	}
 
-	fun createUrl(page: Int): String = "https://safemap.go.kr/openApiService/data/getTotHospitalData.do" +
+	fun createUrl(page: Int, div: HospitalDiv): String = "https://safemap.go.kr/openApiService/data/getTotHospitalData.do" +
 			"?serviceKey=$key" +
 			"&dataType=json" +
 			"&numOfRows=1000" +
-			"&pageNo=$page"
+			"&pageNo=$page" +
+			"&DutyDiv=${div.code}"
 }

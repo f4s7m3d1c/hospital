@@ -7,8 +7,8 @@ enum class VersionStatus(val code: UByte) {
 	STABLE(200u); // 최신 버전
 
 	companion object {
-		fun forCode(code: UByte): VersionStatus {
-			return values().first { it.code == code }
+		fun forCode(code: UByte): VersionStatus? {
+			return values().firstOrNull{ it.code == code }
 		}
 	}
 }
