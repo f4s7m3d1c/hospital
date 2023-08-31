@@ -65,7 +65,7 @@ object HospitalUpdater {
 				.fromJson(response.body!!.string(), MutableMap::class.java)
 					as MutableMap<String, MutableMap<String, MutableMap<String, Any>>>
 			if(body["response"]!!["header"]!!["resultMsg"] == HospitalAPI.SUCCESS_NO_DATA) {
-				logger.info("Completed get hospitals info(${div.code})")
+				logger.info("Completed get hospitals info(${div.code}: $page)")
 				break
 			}
 			if(body["response"]!!["header"]!!["resultMsg"] != HospitalAPI.SUCCESS_OK) {
