@@ -1,6 +1,5 @@
 package io.github.f4s7m3d1c.hospital.database
 
-import io.github.f4s7m3d1c.hospital.version.VersionInfo
 import io.github.f4s7m3d1c.hospital.version.VersionStatus
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -42,20 +41,6 @@ class VersionLogDB(conn: Connection) {
 		val result: ResultSet = latestStableVersionStatement.executeQuery()
 		result.next()
 		return result.getLong("latest_version").toUInt()
-	}
-
-	private val versionInfoStatement: PreparedStatement
-		= conn.prepareStatement("SELECT * FROM `version_log_db` WHERE `version` = ?;")
-
-	fun getVersionInfo(version: UInt): VersionInfo{
-		versionInfoStatement.setLong(1, version.toLong())
-		val result: ResultSet = versionInfoStatement.executeQuery()
-		result.next()
-		return VersionInfo(
-			result.getLong("version").toUInt(),
-			result.getDate("date"),
-			VersionStatus.forCode(result.getInt("status").toUByte())!!
-		)
 	}
 
 	private val createVersionStatement: PreparedStatement
