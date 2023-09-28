@@ -16,8 +16,12 @@ class NearbyHospitalController(
 	@GetMapping("/hospital")
 	fun getNearbyHospital(
 		@RequestParam lat: Double,
-		@RequestParam lon: Double
+		@RequestParam lon: Double,
+		@RequestParam(required = false) distance: Double?
 	): MutableMap<String, Any> {
-		return service.getNearbyHospital(Vector2(lat, lon))
+		return service.getNearbyHospital(
+			Vector2(lat, lon),
+			if(distance === null) 1.0 else distance
+		)
 	}
 }

@@ -8,16 +8,17 @@ import org.springframework.stereotype.Service
 @Service
 class NearbyHospitalService {
 
-	fun getNearbyHospital(pos: Vector2): MutableMap<String, Any> {
-		val hospitals: MutableList<Hospital> = HospitalDB.INSTANCE.getHospitals(pos.calculateBoundingBox(5.0))
+	fun getNearbyHospital(pos: Vector2, distance: Double): MutableMap<String, Any> {
+		val hospitals: MutableList<Hospital> = HospitalDB.INSTANCE.getHospitals(pos.calculateBoundingBox(distance * 2 + 1.5))
 		val nearbyHospitals: MutableList<Hospital> = mutableListOf()
 		hospitals.forEach {
-			if (it.position.distance(pos) <= 1.3) {
+			if (it.position.distance(pos) <= distance + 0.2) {
 				nearbyHospitals.add(it)
 			}
 		}
 		return mutableMapOf(
 			"count" to nearbyHospitals.size,
+			"distance" to distance,
 			"hospitals" to nearbyHospitals
 		)
 	}
