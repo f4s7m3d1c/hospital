@@ -28,6 +28,7 @@ object HospitalUpdater {
 		var isStable = true
 
 		try {
+			getHospitalInfo(client, HospitalDiv.GENERAL)
 			getHospitalInfo(client, HospitalDiv.HOSPITAL)
 			getHospitalInfo(client, HospitalDiv.CLINIC)
 		} catch (e: Exception) {
