@@ -1,12 +1,57 @@
-package io.github.f4s7m3d1c.hospital.hospital
+package io.github.f4s7m3d1c.hospital.entity
 
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+
+@Embeddable
 data class OpenTime(
+	@Column(
+		nullable = false,
+		name = "timeMon",
+		length = 20
+	)
 	val mon: String,
+
+	@Column(
+		nullable = false,
+		name = "timeTue",
+		length = 20
+	)
 	val tue: String,
+
+	@Column(
+		nullable = false,
+		name = "timeWen",
+		length = 20
+	)
 	val wen: String,
+
+	@Column(
+		nullable = false,
+		name = "timeThu",
+		length = 20
+	)
 	val thu: String,
+
+	@Column(
+		nullable = false,
+		name = "timeFri",
+		length = 20
+	)
 	val fri: String,
+
+	@Column(
+		nullable = false,
+		name = "timeSat",
+		length = 20
+	)
 	val sat: String,
+
+	@Column(
+		nullable = false,
+		name = "timeSun",
+		length = 20
+	)
 	val sun: String
 ) {
 	companion object {
